@@ -11,8 +11,11 @@ use Composer\Script\PackageEvent;
 
 class Plugin implements PluginInterface
 {
+    private $io;
+
     public function activate(Composer $composer, IOInterface $io)
     {
+        $this->io = $io;
         $io->write('hello, world');
     }
 
@@ -29,6 +32,7 @@ class Plugin implements PluginInterface
     }
 
     public function possiblyUpdateBranch(PackageEvent $event) {
+        $this->io->write('hello again');
         var_dump($event);
     }
 }
