@@ -33,7 +33,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     public function possiblyUpdateBranch($event) {
-        $this->io->write('hello again');
-        var_dump($event);
+        $operation = $event->getOperation();
+        $package = $operation->getPackage();
+
+        $prettyVersion = $package->getPrettyVersion();
+
+        $this->io->write($prettyVersion);
     }
 }
