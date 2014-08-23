@@ -13,7 +13,7 @@ class Plugin implements PluginInterface
 {
     public function activate(Composer $composer, IOInterface $io)
     {
-
+        $io->write('hello, world');
     }
 
     public static function getSubscribedEvents()
