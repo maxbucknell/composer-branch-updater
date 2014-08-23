@@ -16,21 +16,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 {
     private $composer;
     private $io;
-    private $git;
+    private $processExecutor;
 
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
         $this->io = $io;
 
-        $processExecutor = new ProcessExecutor($this->io);
-
-        $this->git = new Git(
-            $this->io,
-            $this->composer->getConfig(),
-            $processExecutor,
-            new FileSystem($processExecutor)
-        );
+        $this->processExecutor = new ProcessExecutor($this->io);
     }
 
     public static function getSubscribedEvents()
@@ -63,15 +56,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $prettyVersion = $package->getPrettyVersion();
 
-        $this->io->write($package->getName());
-
-        $realCwd = getcwd();
-        $cwd = realpath($this->composer->getConfig()->get('vendor-dir') . '/' . $package->getName());
-        $this->io->write($realCwd);
-        $this->io->write($cwd);
-
         if (strpos($prettyVersion, 'dev-') === 0) {
-            // $this->updateBranch($package, substr($prettyVersion, 4);
+            $this->updateBranch($package, substr($prettyVersion, 4));
         } else {
             return;
         }
@@ -82,6 +68,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->write('Updating to ' . $branch);
 
         $command = 'git reset --hard ' . $branch;
-        $commandCallable = function () use ($command) { return $command; };
+        $cwd = realpath(
+            $this->composer->getConfig()->get('vendor-dir') .
+            '/' .
+            $package->getName()
+        );
+        $this->processExecutor->execute($command, $this->io, $cwd);
     }
 }
+
