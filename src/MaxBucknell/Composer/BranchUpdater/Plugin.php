@@ -15,27 +15,34 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function activate(Composer $composer, IOInterface $io)
     {
-        var_dump('awesome');
         $this->io = $io;
-        $io->write('hello, world');
     }
 
     public static function getSubscribedEvents()
     {
         return array(
             ScriptEvents::POST_PACKAGE_INSTALL => array(
-                array('possiblyUpdateBranch', 0)
+                array('onPostPackageInstall', 1)
             ),
             ScriptEvents::POST_PACKAGE_UPDATE => array(
-                array('possiblyUpdateBranch', 0)
+                array('onPostPackageUpdate', 1)
             )
         );
     }
 
-    public function possiblyUpdateBranch($event) {
-        $operation = $event->getOperation();
-        $package = $operation->getPackage();
+    public function onPostPackageInstall(PackageEvent $event) {
+        $package = $event->getOperation()->getPackage();
 
+        $this->possiblyUpdateBranch($package);
+    }
+
+    public function onPostPackageUpdate(PackageEvent $event) {
+        $package = $event->getOperation()->getTargetPackage();
+
+        $this->possiblyUpdateBranch($package);
+    }
+
+    public function possiblyUpdateBranch($package) {
         $prettyVersion = $package->getPrettyVersion();
 
         $this->io->write($prettyVersion);
