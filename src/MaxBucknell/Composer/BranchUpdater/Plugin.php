@@ -65,7 +65,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $this->io->write($package->getName());
 
-        $cwd = $this->composer->getConfig()->get('vendor-dir') . $package->getName();
+        $realCwd = getcwd();
+        $cwd = realpath($this->composer->getConfig()->get('vendor-dir') . '/' . $package->getName());
+        $this->io->write($realCwd);
         $this->io->write($cwd);
 
         if (strpos($prettyVersion, 'dev-') === 0) {
