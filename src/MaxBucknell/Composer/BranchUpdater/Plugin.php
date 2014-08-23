@@ -15,6 +15,7 @@ class Plugin implements PluginInterface
 
     public function activate(Composer $composer, IOInterface $io)
     {
+        var_dump('awesome');
         $this->io = $io;
         $io->write('hello, world');
     }
@@ -23,15 +24,15 @@ class Plugin implements PluginInterface
     {
         return array(
             ScriptEvents::POST_PACKAGE_INSTALL => array(
-                array('possiblyUpdateBranch', 1)
+                array('possiblyUpdateBranch', 0)
             ),
             ScriptEvents::POST_PACKAGE_UPDATE => array(
-                array('possiblyUpdateBranch', 1)
+                array('possiblyUpdateBranch', 0)
             )
         );
     }
 
-    public function possiblyUpdateBranch(PackageEvent $event) {
+    public function possiblyUpdateBranch($event) {
         $this->io->write('hello again');
         var_dump($event);
     }
