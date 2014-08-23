@@ -63,7 +63,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $prettyVersion = $package->getPrettyVersion();
 
-        var_dump($package);
+        $this->io->write($package->getName());
+
+        $cwd = $this->composer->getConfig()->get('vendor-dir') . $package->getName();
+        $this->io->write($cwd);
 
         if (strpos($prettyVersion, 'dev-') === 0) {
             // $this->updateBranch($package, substr($prettyVersion, 4);
