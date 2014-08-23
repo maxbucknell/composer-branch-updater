@@ -65,7 +65,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function updateBranch($package, $branch)
     {
-        var_dump($this->io);
         $this->io->write('Updating to ' . $branch);
 
         $command = 'git reset --hard ' . $branch;
@@ -74,7 +73,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             '/' .
             $package->getName()
         );
-        $this->processExecutor->execute($command, $this->io, $cwd);
+        $this->processExecutor->execute($command, null, $cwd);
     }
 }
 
