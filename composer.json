@@ -1,0 +1,18 @@
+{
+  "name": "maxbucknell/composer-branch-updater",
+  "description": "Yo.",
+  "type": "composer-plugin",
+  "require": {
+    "composer-plugin-api": "1.0.0"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-0": {
+      "MaxBucknell\\Composer\\BranchUpdater\\": "src/"
+    }
+  },
+  "extra": {
+    "class": "MaxBucknell\\Composer\\BranchUpdater\\Plugin"
+  }
+}
+
