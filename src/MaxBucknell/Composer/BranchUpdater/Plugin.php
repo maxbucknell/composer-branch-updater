@@ -8,14 +8,29 @@ use Composer\Plugin\PluginInterface;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Script\ScriptEvents;
 use Composer\Script\PackageEvent;
+use Composer\Util\ProcessExecutor;
+use Composer\Util\FileSystem;
+use Composer\Util\Git;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    private $composer;
     private $io;
+    private $git;
 
     public function activate(Composer $composer, IOInterface $io)
     {
+        $this->composer = $composer;
         $this->io = $io;
+
+        $processExecutor = new ProcessExecutor($this->io);
+
+        $this->git = new Git(
+            $this->io,
+            $this->composer->getConfig(),
+            $processExecutor,
+            new FileSystem($processExecutor)
+        );
     }
 
     public static function getSubscribedEvents()
@@ -30,21 +45,38 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         );
     }
 
-    public function onPostPackageInstall(PackageEvent $event) {
+    public function onPostPackageInstall(PackageEvent $event)
+    {
         $package = $event->getOperation()->getPackage();
 
         $this->possiblyUpdateBranch($package);
     }
 
-    public function onPostPackageUpdate(PackageEvent $event) {
+    public function onPostPackageUpdate(PackageEvent $event)
+    {
         $package = $event->getOperation()->getTargetPackage();
 
         $this->possiblyUpdateBranch($package);
     }
 
-    public function possiblyUpdateBranch($package) {
+    private function possiblyUpdateBranch($package)
+    {
         $prettyVersion = $package->getPrettyVersion();
 
-        $this->io->write($prettyVersion);
+        var_dump($package);
+
+        if (strpos($prettyVersion, 'dev-') === 0) {
+            // $this->updateBranch($package, substr($prettyVersion, 4);
+        } else {
+            return;
+        }
+    }
+
+    private function updateBranch($package, $branch)
+    {
+        $this->io->write('Updating to ' . $branch);
+
+        $command = 'git reset --hard ' . $branch;
+        $commandCallable = function () use ($command) { return $command; };
     }
 }
