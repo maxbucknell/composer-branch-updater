@@ -105,7 +105,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             '/' .
             $package->getName()
         );
-        $this->processExecutor->execute($command, null, $cwd);
+        $output = '';
+        $this->processExecutor->execute($command, $output, $cwd);
     }
 }
 
