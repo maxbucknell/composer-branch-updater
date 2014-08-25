@@ -18,6 +18,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     private $io;
     private $processExecutor;
 
+    /**
+     * Activate the plugin.
+     *
+     * @param Composer $composer
+     * @param IOInterface $io
+     */
     public function activate(Composer $composer, IOInterface $io)
     {
         $this->composer = $composer;
@@ -26,6 +32,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->processExecutor = new ProcessExecutor($this->io);
     }
 
+    /**
+     * Return an array of events the plugin subscribes to.
+     *
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -38,6 +49,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         );
     }
 
+    /**
+     * Find the package for an install event.
+     *
+     * @param PackageEvent $event
+     */
     public function onPostPackageInstall(PackageEvent $event)
     {
         $package = $event->getOperation()->getPackage();
@@ -45,6 +61,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->possiblyUpdateBranch($package);
     }
 
+    /**
+     * Find the package for an update event.
+     *
+     * @param PackageEvent $event
+     */
     public function onPostPackageUpdate(PackageEvent $event)
     {
         $package = $event->getOperation()->getTargetPackage();
@@ -52,6 +73,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->possiblyUpdateBranch($package);
     }
 
+    /**
+     * Check if a branch was requested.
+     *
+     * @param Package $package
+     */
     private function possiblyUpdateBranch($package)
     {
         $prettyVersion = $package->getPrettyVersion();
@@ -63,11 +89,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
     }
 
+    /**
+     * Update a package to a given branch.
+     *
+     * @param Package $package
+     * @param string $branch
+     */
     private function updateBranch($package, $branch)
     {
         $this->io->write('Updating to ' . $branch);
 
-        $command = 'git reset --hard ' . $branch;
+        $command = 'git reset --hard HEAD && git checkout ' . $branch;
         $cwd = realpath(
             $this->composer->getConfig()->get('vendor-dir') .
             '/' .
