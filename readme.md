@@ -61,3 +61,4 @@ For our use case, we can ignore this risk. We know about all of our
 dependencies, and we can make certain assumptions. If you want to use
 this extension, make sure you can make those assumptions too.
 
+[1]: https://github.com/composer/satis
